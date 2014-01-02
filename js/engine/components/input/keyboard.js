@@ -17,6 +17,13 @@ namespace('sg.gam.components.engine.input.keyboard', (function() {
 		document.onkeyup = null;
 	}
 	
+	keyboard.prototype.reset = function reset() {
+		while (this.next()) {
+			// do nothing
+		}
+		this.keys = new Object();
+	};
+	
 	keyboard.prototype.poll = function poll(key) {
 		var self = this;
 		
@@ -44,6 +51,7 @@ namespace('sg.gam.components.engine.input.keyboard', (function() {
 	};
 	
 	keyboard.prototype.next = function next_event() {
+		var self = this;
 		while (this.event_queue && this.event_queue.length > 0) {
 			if (!this.is_valid_event(this.event_queue[0])) {
 				this.event_queue.shift();
@@ -51,12 +59,7 @@ namespace('sg.gam.components.engine.input.keyboard', (function() {
 			else {
 				var event = this.event_queue.shift();
 				
-				if (event.state == 'down') {
-					this.keys[event.key] = true;
-				}
-				else if (event.state == 'up') {
-					this.keys[event.key] = false;
-				}
+				self.keys[event.key] = (event.state == 'up') ? false : true;
 				
 				return event;
 			}

@@ -14,16 +14,16 @@ namespace('sg.gam.engine', (function() {
 		this.simulationTime = (new Date).getTime();
 	};
 
-	engine.prototype.update = function(time) {
+	engine.prototype.update = function(time, dt) {
 		this.input.update();
 		
 		var event = this.input.peek();
-		while (event != null && event.time - time < this.dt) {
+		while (event != null && event.time - time < dt) {
 			this.game.event_handler(this.input.next());
 			event = this.input.peek();
 		}
 		
-		this.game.update(time, this.dt);
+		this.game.update(time, dt);
 	};
 
 	engine.prototype.render = function() {
@@ -31,14 +31,13 @@ namespace('sg.gam.engine', (function() {
 
 		this.graphics.clear();
 
-		this.game.render(this.accumulator);
+		this.game.render();
 		
 		if (this.game.debugMode) {
 			this.fps_counter.render(this.accumulator, this.graphics);
 		}
 	};
 
-	// Ref: http://nokarma.org/2011/02/02/javascript-game-development-the-game-loop/index.html
 	function setup_game_loop() {
 		var onEachFrame;
 		if (window.requestAnimationFrame) {
@@ -99,14 +98,14 @@ namespace('sg.gam.engine', (function() {
 		this.game.init(this);
 
 		var self = this;
+		
+		window.onblur = function() {
+			self.input.reset();
+		};
 
-		// Ref: http://gafferongames.com/game-physics/fix-your-timestep/
 		window.onEachFrame(function() {
 			var newTime = (new Date).getTime();
 			var frameTime = newTime - self.currentTime;
-			if (frameTime > 300) {
-				frameTime = 300;
-			}
 
 			var accumulatorTime = self.currentTime - self.accumulator;
 			self.currentTime = newTime;
@@ -115,12 +114,17 @@ namespace('sg.gam.engine', (function() {
 			var loops = 0;
 			while (self.accumulator >= self.dt)
 			{
-				 self.update(accumulatorTime);
+				 self.update(accumulatorTime, self.dt);
 				 self.accumulator -= self.dt;
 				 accumulatorTime += self.dt;
 				 loops++;
 			}
+			
+			self.update(accumulatorTime, self.accumulator);
+            self.accumulator = 0;
+            
 			self.render();
+			
 			self.fps_counter.tick(frameTime);
 		});
 	};

@@ -26,7 +26,7 @@ namespace('sg.gam.components.engine.fps', (function() {
 	};
 
 	fps.prototype.render = function(interpolation, renderman) {
-		renderman.draw_text(4, 18, this.fps.toString() + " fps", 18, "rgba(255,255,255,0.5)");
+		renderman.draw_text(4, 18, this.fps.toString() + " fps", 18, "#ffffff");
 	};
 
 	return fps;

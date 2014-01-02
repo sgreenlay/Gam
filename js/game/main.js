@@ -76,9 +76,7 @@ namespace('sg.game.game', (function() {
 		
 		if (!self.paused)
 		{
-			self.world.interpolate(interpolation, function() {
-				self.body.draw(self.engine.graphics);
-			});
+			self.body.draw(self.engine.graphics);
 		}
 		else
 		{

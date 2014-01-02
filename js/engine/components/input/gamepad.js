@@ -54,6 +54,15 @@ namespace('sg.gam.components.engine.input.gamepad', (function() {
 		}
 	}
 	
+	gamepad.prototype.reset = function reset() {
+		while (this.next()) {
+			// do nothing
+		}
+		while (this.gamepads && this.gamepads.length) {
+			this.gamepads.shift();
+		}
+	};
+	
 	gamepad.prototype.poll = function poll(index) {
 		var self = this;
 		

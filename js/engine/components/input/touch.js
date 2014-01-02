@@ -43,6 +43,14 @@ namespace('sg.gam.components.engine.input.touch', (function() {
 		}
 	}
 	
+	touch.prototype.reset = function reset() {
+		while (this.next()) {
+			// do nothing
+		}
+		
+		// TODO
+	};
+	
 	touch.prototype.poll = function poll() {
 		
 		// TODO

@@ -23,6 +23,17 @@ namespace('sg.gam.components.engine.input.mouse', (function() {
 		this.canvas.onmouseup = null;
 	}
 	
+	mouse.prototype.reset = function reset() {
+		while (this.next()) {
+			// do nothing
+		}
+		this.state = 'up';
+		this.position = {
+			x : 0,
+			y : 0,
+		};
+	};
+	
 	mouse.prototype.poll = function poll() {
 		return {
 			state : this.state,
@@ -31,12 +42,6 @@ namespace('sg.gam.components.engine.input.mouse', (function() {
 	};
 	
 	mouse.prototype.is_valid_event = function is_valid_event(event) {
-		if (event.type == 'mouse' && event.state == 'down' && this.state == 'down') {
-			return false;
-		}
-		else if (event.type == 'mouse' && event.state == 'up' && this.state == 'up') {
-			return false;
-		}
 		return true;
 	};
 	
@@ -53,6 +58,7 @@ namespace('sg.gam.components.engine.input.mouse', (function() {
 	};
 	
 	mouse.prototype.next = function next_event() {
+		var self = this;
 		while (this.event_queue && this.event_queue.length > 0) {
 			if (!this.is_valid_event(this.event_queue[0])) {
 				this.event_queue.shift();
@@ -60,8 +66,8 @@ namespace('sg.gam.components.engine.input.mouse', (function() {
 			else {
 				var event = this.event_queue.shift();
 				
-				this.state = event.state;
-				this.position = event.position;
+				self.state = event.state;
+				self.position = event.position;
 				
 				return event;
 			}

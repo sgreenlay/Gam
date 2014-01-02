@@ -16,17 +16,6 @@ namespace('sg.game.components.physics.world', (function() {
         });
     };
 
-    world.prototype.interpolate = function(dt, fn) {
-        var self = this;
-
-        // TODO: optimize this
-        self.update(dt);
-		
-		fn();
-		
-        self.update(-dt);
-    };
-
     return world;
 })());  
 

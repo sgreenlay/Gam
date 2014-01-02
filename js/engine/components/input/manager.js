@@ -33,6 +33,13 @@ namespace('sg.gam.components.engine.input.manager', (function() {
 		this.touch.release_input();
 	}
 	
+	manager.prototype.reset = function reset() {
+		this.mouse.reset();
+		this.keyboard.reset();
+		this.gamepad.reset();
+		this.touch.reset();
+	};
+	
 	manager.prototype.update = function update() {
 		this.gamepad.update();
 	};

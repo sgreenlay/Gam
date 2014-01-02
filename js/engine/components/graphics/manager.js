@@ -2,9 +2,42 @@
 namespace('sg.gam.components.engine.graphics.manager', (function() {
 
 	var manager = function(canvas) {
+		this.canvas = canvas;
 		this.context = canvas.getContext('2d');
 		this.width = canvas.width;
 		this.height = canvas.height;
+		this.fullscreen = false;
+	};
+	
+	manager.prototype.toggle_fullscreen = function toggle_fullscreen() {
+		if (this.fullscreen) {
+			if (this.canvas.cancelFullscreen) {
+				this.canvas.cancelFullscreen();
+			}
+			else if (this.canvas.mozCancelFullScreen) {
+				this.canvas.mozCancelFullScreen();
+			}
+			else if (this.canvas.webkitCancelFullscreen) {
+				this.canvas.webkitCancelFullscreen();
+			}
+			else if (this.canvas.msCancelFullscreen) {
+				this.canvas.msCancelFullscreen();
+			}
+		}
+		else {
+			if (this.canvas.requestFullscreen) {
+				this.canvas.requestFullscreen();
+			}
+			else if (this.canvas.mozRequestFullScreen) {
+				this.canvas.mozRequestFullScreen();
+			}
+			else if (this.canvas.webkitRequestFullscreen) {
+				this.canvas.webkitRequestFullscreen();
+			}
+			else if (this.canvas.msRequestFullscreen) {
+				this.canvas.msRequestFullscreen();
+			}
+		}
 	};
 
 	manager.prototype.clear = function clear() {
@@ -18,6 +51,15 @@ namespace('sg.gam.components.engine.graphics.manager', (function() {
 	manager.prototype.draw_rectangle = function draw_rectangle(x, y, w, h, colour) {
 		this.context.fillStyle = colour;
 		this.context.fillRect(x, y, w, h);
+	};
+	
+	manager.prototype.draw_line = function draw_rectangle(x1, y1, x2, y2, w, colour) {
+		this.context.lineWidth = w;
+		this.context.strokeStyle = colour;
+		this.context.beginPath();
+		this.context.moveTo(x1, y1);
+		this.context.lineTo(x2, y2);
+		this.context.stroke();
 	};
 
 	manager.prototype.draw_text = function draw_text(x, y, text, size, colour) {
