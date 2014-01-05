@@ -7,11 +7,9 @@ require('js/engine/components/audio/manager.js', function () {
 namespace('sg.gam.engine', (function() {
 
 	var engine = function (canvas) {
-		this.graphics = new sg.gam.components.engine.graphics.manager(canvas);
 		this.input = new sg.gam.components.engine.input.manager(canvas);
+		this.graphics = new sg.gam.components.engine.graphics.manager(canvas);
 		this.audio = new sg.gam.components.engine.audio.manager();
-		
-		this.simulationTime = (new Date).getTime();
 	};
 
 	engine.prototype.update = function(time, dt) {
@@ -32,10 +30,6 @@ namespace('sg.gam.engine', (function() {
 		this.graphics.clear();
 
 		this.game.render();
-		
-		if (this.game.debugMode) {
-			this.fps_counter.render(this.accumulator, this.graphics);
-		}
 	};
 
 	function setup_game_loop() {
@@ -85,19 +79,19 @@ namespace('sg.gam.engine', (function() {
 	}
 
 	engine.prototype.run = function(game) {
+		var self = this;
+
 		setup_game_loop();
 
-		this.dt = 100;
-		this.currentTime = (new Date).getTime();
-		this.accumulator = 0;
+		self.step_size = 100;
+		self.currentTime = (new Date).getTime();
+		self.accumulator = 0;
 
-		this.fps_counter = new sg.gam.components.engine.fps();
-		this.input.capture_input();
+		self.fps_counter = new sg.gam.components.engine.fps(self);
+		self.input.capture_input();
 
-		this.game = game;
-		this.game.init(this);
-
-		var self = this;
+		self.game = game;
+		self.game.init(self);
 		
 		window.onblur = function() {
 			self.input.reset();
@@ -107,25 +101,37 @@ namespace('sg.gam.engine', (function() {
 			var newTime = (new Date).getTime();
 			var frameTime = newTime - self.currentTime;
 
-			var accumulatorTime = self.currentTime - self.accumulator;
-			self.currentTime = newTime;
-			self.accumulator += frameTime;
-
-			var loops = 0;
-			while (self.accumulator >= self.dt)
+			if (frameTime > 5 * self.step_size)
 			{
-				 self.update(accumulatorTime, self.dt);
-				 self.accumulator -= self.dt;
-				 accumulatorTime += self.dt;
-				 loops++;
+				frameTime = 5 * self.step_size;
 			}
-			
-			self.update(accumulatorTime, self.accumulator);
-            self.accumulator = 0;
-            
+
+			var accumulatorTime = self.currentTime - frameTime;
+			var accumulator = frameTime;
+			var loops = 0;
+
+			while (accumulator >= self.step_size)
+			{
+				self.update(accumulatorTime, self.step_size);
+				accumulator -= self.step_size;
+				accumulatorTime += self.step_size;
+				loops++;
+			}
+
+			if (accumulator > 0)
+			{
+				self.update(accumulatorTime, accumulator);
+				loops++;
+			}
+
 			self.render();
-			
+
 			self.fps_counter.tick(frameTime);
+			if (self.game.debugMode) {
+				self.fps_counter.render();
+			}
+
+			self.currentTime = newTime;
 		});
 	};
 

@@ -41,6 +41,7 @@ namespace('sg.game.game', (function() {
 		
 		window.onblur = function() {
 			self.paused = true;
+            console.log('test');
 		};
 	};
 

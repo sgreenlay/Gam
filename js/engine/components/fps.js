@@ -3,7 +3,8 @@ require('js/engine/components/graphics/manager.js', function () {
 
 namespace('sg.gam.components.engine.fps', (function() {
 
-	var fps = function() {
+	var fps = function(engine) {
+		this.engine = engine;
 		this.counter = 0;
 		this.total_elapsed = 0;
 		this.fps = 0;
@@ -25,8 +26,8 @@ namespace('sg.gam.components.engine.fps', (function() {
 		}
 	};
 
-	fps.prototype.render = function(interpolation, renderman) {
-		renderman.draw_text(4, 18, this.fps.toString() + " fps", 18, "#ffffff");
+	fps.prototype.render = function() {
+		this.engine.graphics.draw_text(4, 18, this.fps.toString() + " fps", 18, "#ffffff");
 	};
 
 	return fps;
