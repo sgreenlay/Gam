@@ -8,11 +8,28 @@ namespace('sg.gam.components.engine.input.manager', (function() {
 
 	var manager = function(canvas) {
 		this.canvas = canvas;
-		
-		this.mouse = new sg.gam.components.engine.input.mouse(canvas);
+
+		this.mouse = new sg.gam.components.engine.input.mouse(this, canvas);
 		this.keyboard = new sg.gam.components.engine.input.keyboard(canvas);
 		this.gamepad = new sg.gam.components.engine.input.gamepad(canvas);
-		this.touch = new sg.gam.components.engine.input.touch(canvas);
+		this.touch = new sg.gam.components.engine.input.touch(this, canvas);
+	};
+
+	manager.prototype.map_input_point = function(point) {
+		var self = this;
+
+		var viewport_width = self.canvas.clientWidth;
+		var viewport_height = self.canvas.clientHeight;
+
+		var relative_point = {
+			x : point.x / viewport_width,
+			y : point.y / viewport_height
+		};
+
+		return {
+			x : relative_point.x * self.canvas.width,
+			y : relative_point.y * self.canvas.height
+		};
 	};
 
 	manager.prototype.capture_input = function capture_input() {
@@ -20,33 +37,33 @@ namespace('sg.gam.components.engine.input.manager', (function() {
 		this.keyboard.capture_input();
 		this.gamepad.capture_input();
 		this.touch.capture_input();
-		
+
 		this.canvas.onselectstart = this.onselectstart();
 	};
-	
+
 	manager.prototype.release_input = function release_input() {
 		this.canvas.onselectstart = null;
-		
+
 		this.mouse.release_input();
 		this.keyboard.release_input();
 		this.gamepad.release_input();
 		this.touch.release_input();
 	}
-	
+
 	manager.prototype.reset = function reset() {
 		this.mouse.reset();
 		this.keyboard.reset();
 		this.gamepad.reset();
 		this.touch.reset();
 	};
-	
+
 	manager.prototype.update = function update() {
 		this.gamepad.update();
 	};
-	
+
 	manager.prototype.peek = function peek_next_event() {
 		var evt = null;
-		
+
 		if (evt == null) {
 			evt = this.mouse.peek();
 		}
@@ -59,13 +76,13 @@ namespace('sg.gam.components.engine.input.manager', (function() {
 		if (evt == null) {
 			evt = this.touch.peek();
 		}
-		
+
 		return evt;
 	};
-	
+
 	manager.prototype.next = function next_event() {
 		var evt = null;
-		
+
 		if (evt == null) {
 			evt = this.mouse.next();
 		}
@@ -78,10 +95,10 @@ namespace('sg.gam.components.engine.input.manager', (function() {
 		if (evt == null) {
 			evt = this.touch.next();
 		}
-		
+
 		return evt;
 	};
-	
+
 	manager.prototype.onselectstart = function onselectstart() {
 		var onselectstarthandler = function() {
 			return false;
