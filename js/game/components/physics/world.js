@@ -17,6 +17,6 @@ namespace('sg.game.components.physics.world', (function() {
     };
 
     return world;
-})());  
+})());
 
 loaded('js/game/components/physics/world.js');

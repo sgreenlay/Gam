@@ -1,10 +1,10 @@
 namespace('sg.game.resources.sounds', (function() {
 	var sounds = function(audioman) {
 		var self = this;
-		
+
 		self.sounds = new Object();
 		self.sounds['unknown'] = 'wav/test.wav';
-		
+
 		Object.keys(this.sounds).forEach(function(sound) {
 			audioman.preload(self.get(sound));
 		});

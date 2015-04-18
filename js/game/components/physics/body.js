@@ -5,10 +5,11 @@ namespace('sg.game.components.physics.body', (function() {
             x : x,
             y : y,
         };
-        this.shape = {
+        this.size = {
             width : width,
             height : height,
         };
+        this.mass = mass;
         this.velocity = {
             x : 0,
             y : 0,
@@ -18,32 +19,32 @@ namespace('sg.game.components.physics.body', (function() {
             y : 0,
         };
     };
-	
-	body.prototype.will_collide_with = function(otherBody) {
-		var self = this;
-		
-		// http://stackoverflow.com/a/13390495/169021
-		if ((self.position.x + self.shape.width <=  otherBody.position.x) ||
-			(otherBody.position.x + otherBody.shape.width <=  self.position.x) ||
-			(self.position.y + self.shape.height <=  otherBody.position.y) ||
-			(otherBody.position.y + otherBody.shape.height <=  self.position.y))
-		{
-			return false;
-		}
-		
-		return true;
-	}
-	
-	body.prototype.collide_with = function(otherBody) {
-		var self = this;
-		
-		if (!self.will_collide_with(otherBody))
-		{
-			return;
-		}
-		
-		// TODO
-	}
+
+    body.prototype.is_colliding_with = function(otherBody) {
+        var self = this;
+
+        // http://stackoverflow.com/a/13390495/169021
+        if ((self.position.x + self.size.width <=  otherBody.position.x) ||
+            (otherBody.position.x + otherBody.size.width <=  self.position.x) ||
+            (self.position.y + self.size.height <=  otherBody.position.y) ||
+            (otherBody.position.y + otherBody.size.height <=  self.position.y))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    body.prototype.collide_with = function(otherBody) {
+        var self = this;
+
+        if (!self.is_colliding_with(otherBody))
+        {
+            return;
+        }
+
+        // TODO
+    }
 
     body.prototype.update = function(dt) {
         var self = this;
@@ -59,14 +60,14 @@ namespace('sg.game.components.physics.body', (function() {
         var self = this;
 
         renderman.draw_rectangle(
-			self.position.x - self.shape.width / 2,
-			self.position.y - self.shape.height / 2,
-			self.shape.width,
-			self.shape.height,
-			"#ff0000");
+            self.position.x - self.size.width / 2,
+            self.position.y - self.size.height / 2,
+            self.size.width,
+            self.size.height,
+            "#ff0000");
     };
 
     return body;
-})());  
+})());
 
 loaded('js/game/components/physics/body.js');
