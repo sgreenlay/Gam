@@ -1,21 +1,45 @@
-<!--
-    Gam
-    Scott Greenlay
-  -->
+<!DOCTYPE html>
 <html>
-<head>
-    <title>Gam</title>
-    <link href="css/style.css" rel="stylesheet" type="text/css">
-</head>
-<body>
-    <canvas id="game-canvas" width="800" height="480"></canvas>
-    <div id="footer">designed + built by <a href="http://greenlay.net">@sgreenlay</a></div>
-
-    <script type='text/javascript' src='js/lib/require.js'></script>
-    <script type='text/javascript' src='js/lib/namespace.js'></script>
-
-    <script type='text/javascript'>
-        require('js/main.js');
-    </script>
-</body>
+    <head>
+        <title>Gam</title>
+    </head>
+    <body>
+        <style>
+            body {
+                background-color: #323232;
+                font-family: Helvetica, sans-serif;
+                font-size: 16px;
+            }
+            #game {
+                position: fixed;
+                width: 800px;
+                left: 50%;
+                margin-left: -400px;
+                height: 480px;
+                top: 50%;
+                margin-top: -240px;
+            }
+            #footer {
+                position: absolute;
+                width: 400px;
+                left: 50%;
+                margin-left: -200px;
+                height: 24px;
+                bottom: 0px;
+                padding: 5px;
+                color: #777;
+                text-align: center;
+            }
+            #footer a {
+                color: #bbb;
+                text-decoration: none;
+            }
+            #footer a:hover {
+                color: white;
+            }
+        </style>
+        <canvas id="game" width="800" height="480"></canvas>
+        <div id="footer">designed + built by <a href="http://greenlay.net">@sgreenlay</a></div>
+        <script src='js/app.js'></script>
+    </body>
 </html>
