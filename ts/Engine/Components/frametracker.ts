@@ -1,7 +1,9 @@
 
+///<reference path='../interfaces.ts'/>
+
 module Engine.Components {
 
-export class FrameTracker {
+export class FrameTracker implements Visual {
     lastFrameTime : Date;
     lastFrameDeltas : Array<number>
 
