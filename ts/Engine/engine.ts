@@ -1,45 +1,33 @@
 
-///<reference path='interfaces.ts'/>
 ///<reference path='types.ts'/>
 
-///<reference path='Components/frametracker.ts'/>
+///<reference path='Components/timer.ts'/>
 
 module Engine {
 
-export class Engine {
-    canvas : HTMLCanvasElement;
-    context : CanvasRenderingContext2D;
+export interface System {
+    Update(dt : number);
+}
 
-    size : Size;
+export abstract class Game implements System {
+    lastFrameTime : Date;
 
-    frameTracker : Components.FrameTracker;
+    Start() {
+        this.lastFrameTime = new Date();
 
-    constructor(canvas : HTMLCanvasElement) {
-        this.canvas = canvas;
-        this.context = canvas.getContext("2d");
-
-        this.size = new Size(canvas.width, canvas.height);
-
-        this.canvas.width = this.canvas.width * window.devicePixelRatio;
-        this.canvas.height = this.canvas.height * window.devicePixelRatio;
-        this.context.scale(window.devicePixelRatio, window.devicePixelRatio);
-
-        this.frameTracker = new Components.FrameTracker();
-
-        this.Update();
+        this.OnFrame();
     }
 
-    Update = () => {
-        this.frameTracker.Tick();
+    abstract Update(dt : number);
 
-        this.context.fillStyle = "black";
-        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    OnFrame = () => {
+        var frameTime : Date = new Date();
+        var frameDelta : number = frameTime.valueOf() - this.lastFrameTime.valueOf();
+        this.lastFrameTime = frameTime;
 
-        // TODO
+        this.Update(frameDelta);
 
-        this.frameTracker.Render(this.context, 5, this.size.height - 29, 180, 18);
-
-        requestAnimationFrame(this.Update);
+        requestAnimationFrame(this.OnFrame);
     }
 };
 

@@ -1,3 +1,3 @@
-///<reference path='Engine/engine.ts'/>
+///<reference path='Game/game.ts'/>
 
-var engine = new Engine.Engine(document.getElementById("game") as HTMLCanvasElement);
+var engine = new Game.Game(document.getElementById("game") as HTMLCanvasElement);
