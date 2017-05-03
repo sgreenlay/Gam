@@ -10,18 +10,18 @@ export interface Visual {
 
 export class SimpleVisual implements Visual {
     bounds : Rect;
-    fill : string;
+    color : string;
 
     constructor(
         bounds : Rect,
-        fill : string)
+        color : string)
     {
         this.bounds = bounds;
-        this.fill = fill;
+        this.color = color;
     }
 
     Render(context : CanvasRenderingContext2D) {
-        context.fillStyle = this.fill;
+        context.fillStyle = this.color;
         context.fillRect(
             this.bounds.x,
             this.bounds.y,

@@ -1,8 +1,6 @@
 
 ///<reference path='types.ts'/>
 
-///<reference path='Components/timer.ts'/>
-
 module Engine {
 
 export interface System {
