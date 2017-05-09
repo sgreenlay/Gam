@@ -59,11 +59,19 @@ export class Handler implements System {
 
         document.addEventListener('keydown', (event) => {
             this.keys.Add(event.keyCode.toString(), true);
-            event.cancelBubble = this.keyHandler.Exists(event.keyCode.toString());
+
+            if (this.keyHandler.Exists(event.keyCode.toString()))
+            {
+                event.preventDefault();
+            }
         });
         document.addEventListener('keyup', (event) => {
             this.keys.Remove(event.keyCode.toString());
-            event.cancelBubble = this.keyHandler.Exists(event.keyCode.toString());
+
+            if (this.keyHandler.Exists(event.keyCode.toString()))
+            {
+                event.preventDefault();
+            }
         });
     }
 

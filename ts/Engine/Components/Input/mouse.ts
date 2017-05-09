@@ -33,20 +33,36 @@ export class Handler implements System {
 
         canvas.addEventListener('mousemove', (event) => {
             this.move = getRelativeCoordinates(event);
-            event.cancelBubble = (this.moveHandler != null);
+
+            if (this.moveHandler != null)
+            {
+                event.preventDefault();
+            }
         });
         canvas.addEventListener('mouseout', (event) => {
             this.move = null;
-            event.cancelBubble = (this.moveHandler != null);
+
+            if (this.moveHandler != null)
+            {
+                event.preventDefault();
+            }
         });
 
         canvas.addEventListener('mousedown', (event) => {
             this.button.Add(event.button.toString(), getRelativeCoordinates(event));
-            event.cancelBubble = this.buttonHandler.Exists(event.button.toString());
+
+            if (this.buttonHandler.Exists(event.button.toString()))
+            {
+                event.preventDefault();
+            }
         });
         canvas.addEventListener('mouseup', (event) => {
             this.button.Remove(event.button.toString());
-            event.cancelBubble = this.buttonHandler.Exists(event.button.toString());
+
+            if (this.buttonHandler.Exists(event.button.toString()))
+            {
+                event.preventDefault();
+            }
         });
     }
 
