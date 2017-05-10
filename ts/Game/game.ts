@@ -6,6 +6,7 @@
 
 ///<reference path='../Engine/Components/Input/mouse.ts'/>
 ///<reference path='../Engine/Components/Input/keyboard.ts'/>
+///<reference path='../Engine/Components/Input/gamepad.ts'/>
 
 module Game {
 
@@ -62,34 +63,52 @@ export class Game extends Engine.Game {
         var keyboardHandler = new Engine.Components.Input.Keyboard.Handler();
 
         keyboardHandler.OnAnyKey([
-            Engine.Components.Input.Keyboard.Key.W,
-            Engine.Components.Input.Keyboard.Key.Up
+            Engine.Components.Input.Keyboard.Key.W
         ],() => {
             character.bounds.y -= 5;
         });
 
         keyboardHandler.OnAnyKey([
-            Engine.Components.Input.Keyboard.Key.A,
-            Engine.Components.Input.Keyboard.Key.Left
+            Engine.Components.Input.Keyboard.Key.A
         ], () => {
             character.bounds.x -= 5;
         });
 
         keyboardHandler.OnAnyKey([
-            Engine.Components.Input.Keyboard.Key.S,
-            Engine.Components.Input.Keyboard.Key.Down
+            Engine.Components.Input.Keyboard.Key.S
         ], () => {
             character.bounds.y += 5;
         });
 
         keyboardHandler.OnAnyKey([
-            Engine.Components.Input.Keyboard.Key.D,
-            Engine.Components.Input.Keyboard.Key.Right
+            Engine.Components.Input.Keyboard.Key.D
         ], () => {
             character.bounds.x += 5;
         });
 
         this.inputHandlers.Add(keyboardHandler);
+
+        var gamepadHandler = new Engine.Components.Input.Gamepad.Handler();
+
+        gamepadHandler.OnReading((id: number, reading: Engine.Components.Input.Gamepad.Reading) => {
+            character.bounds.x += reading.leftThumbstick.x * 7.5;
+            character.bounds.y += reading.leftThumbstick.y * 7.5;
+
+            if (reading.buttons & Engine.Components.Input.Gamepad.Buttons.A) {
+                character.color = "green";
+            }
+            else if (reading.buttons & Engine.Components.Input.Gamepad.Buttons.B) {
+                character.color = "red";
+            }
+            else if (reading.buttons & Engine.Components.Input.Gamepad.Buttons.X) {
+                character.color = "blue";
+            }
+            else if (reading.buttons & Engine.Components.Input.Gamepad.Buttons.Y) {
+                character.color = "yellow";
+            }
+        });
+
+        this.inputHandlers.Add(gamepadHandler);
 
         this.Start();
     }
