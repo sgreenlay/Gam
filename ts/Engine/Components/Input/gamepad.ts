@@ -66,6 +66,64 @@ export class Handler implements System {
         this.handler = handler;
     }
 
+    MapGamepadToGamepadReading(gamepad : Gamepad) : Reading {
+        var leftThumbstick = new Thumbstick(gamepad.axes[0], gamepad.axes[1]);
+        var rightThumbstick = new Thumbstick(gamepad.axes[2], gamepad.axes[3]);
+
+        var leftTrigger = gamepad.buttons[6].value;
+        var rightTrigger = gamepad.buttons[7].value;
+
+        var buttons = Buttons.None;
+
+        if (gamepad.buttons[0].pressed) {
+            buttons |= Buttons.A;
+        }
+        if (gamepad.buttons[1].pressed) {
+            buttons |= Buttons.B;
+        }
+        if (gamepad.buttons[2].pressed) {
+            buttons |= Buttons.X;
+        }
+        if (gamepad.buttons[3].pressed) {
+            buttons |= Buttons.Y;
+        }
+        if (gamepad.buttons[12].pressed) {
+            buttons |= Buttons.DPadUp;
+        }
+        if (gamepad.buttons[13].pressed) {
+            buttons |= Buttons.DPadDown;
+        }
+        if (gamepad.buttons[14].pressed) {
+            buttons |= Buttons.DPadLeft;
+        }
+        if (gamepad.buttons[4].pressed) {
+            buttons |= Buttons.LeftShoulder;
+        }
+        if (gamepad.buttons[5].pressed) {
+            buttons |= Buttons.RightShoulder;
+        }
+        if (gamepad.buttons[10].pressed) {
+            buttons |= Buttons.LeftThumbstick;
+        }
+        if (gamepad.buttons[11].pressed) {
+            buttons |= Buttons.RightThumbstick;
+        }
+        if (gamepad.buttons[8].pressed) {
+            buttons |= Buttons.Back;
+        }
+        if (gamepad.buttons[9].pressed) {
+            buttons |= Buttons.Start;
+        }
+
+        return new Reading(
+            leftThumbstick,
+            rightThumbstick,
+            leftTrigger,
+            rightTrigger,
+            buttons
+        );
+    };
+
     Update(dt : number) {
         if (this.handler) {
             var gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
@@ -76,62 +134,7 @@ export class Handler implements System {
                     continue;
                 }
 
-                var leftThumbstick = new Thumbstick(gamepad.axes[0], gamepad.axes[1]);
-                var rightThumbstick = new Thumbstick(gamepad.axes[2], gamepad.axes[3]);
-
-                var leftTrigger = gamepad.buttons[6].value;
-                var rightTrigger = gamepad.buttons[7].value;
-
-                var buttons = Buttons.None;
-
-                if (gamepad.buttons[0].pressed) {
-                    buttons |= Buttons.A;
-                }
-                if (gamepad.buttons[1].pressed) {
-                    buttons |= Buttons.B;
-                }
-                if (gamepad.buttons[2].pressed) {
-                    buttons |= Buttons.X;
-                }
-                if (gamepad.buttons[3].pressed) {
-                    buttons |= Buttons.Y;
-                }
-                if (gamepad.buttons[12].pressed) {
-                    buttons |= Buttons.DPadUp;
-                }
-                if (gamepad.buttons[13].pressed) {
-                    buttons |= Buttons.DPadDown;
-                }
-                if (gamepad.buttons[14].pressed) {
-                    buttons |= Buttons.DPadLeft;
-                }
-                if (gamepad.buttons[4].pressed) {
-                    buttons |= Buttons.LeftShoulder;
-                }
-                if (gamepad.buttons[5].pressed) {
-                    buttons |= Buttons.RightShoulder;
-                }
-                if (gamepad.buttons[10].pressed) {
-                    buttons |= Buttons.LeftThumbstick;
-                }
-                if (gamepad.buttons[11].pressed) {
-                    buttons |= Buttons.RightThumbstick;
-                }
-                if (gamepad.buttons[8].pressed) {
-                    buttons |= Buttons.Back;
-                }
-                if (gamepad.buttons[9].pressed) {
-                    buttons |= Buttons.Start;
-                }
-
-                var reading = new Reading(
-                    leftThumbstick,
-                    rightThumbstick,
-                    leftTrigger,
-                    rightTrigger,
-                    buttons
-                );
-                this.handler(gamepad.index, reading);
+                this.handler(gamepad.index, this.MapGamepadToGamepadReading(gamepad));
             }
         }
     }
