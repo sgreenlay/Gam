@@ -9,15 +9,10 @@ export interface Visual {
 }
 
 export class SimpleVisual implements Visual {
-    bounds : Rect;
-    color : string;
-
     constructor(
-        bounds : Rect,
-        color : string)
+        public bounds : Rect,
+        public color : string)
     {
-        this.bounds = bounds;
-        this.color = color;
     }
 
     Render(context : CanvasRenderingContext2D) {

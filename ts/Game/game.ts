@@ -1,30 +1,42 @@
 
 ///<reference path='../Engine/engine.ts'/>
 
-///<reference path='../Engine/Components/Graphics/scene.ts'/>
-///<reference path='../Engine/Components/Graphics/visual.ts'/>
-
 ///<reference path='../Engine/Components/Input/mouse.ts'/>
 ///<reference path='../Engine/Components/Input/keyboard.ts'/>
 ///<reference path='../Engine/Components/Input/gamepad.ts'/>
+
+///<reference path='../Engine/Components/Graphics/scene.ts'/>
+///<reference path='../Engine/Components/Graphics/visual.ts'/>
+
+///<reference path='../Engine/Components/Physics/world.ts'/>
+///<reference path='../Engine/Components/Physics/body.ts'/>
+
+///<reference path='entity.ts'/>
 
 module Game {
 
 export class Game extends Engine.Game {
 
     scene : Engine.Components.Graphics.Scene;
+    world : Engine.Components.Physics.World;
     inputHandlers : Engine.Collection<Engine.System>;
+    entities : Engine.Collection<Entity>;
 
     constructor(canvas : HTMLCanvasElement) {
         super();
+
+        // Physics
+
+        this.world = new Engine.Components.Physics.World();
+
+        //this.world.ApplyGravity(new Engine.Point(0, 1), 9.81);
+
+        // Graphics
 
         this.scene = new Engine.Components.Graphics.Scene(canvas);
 
         var background = new Engine.Components.Graphics.Layer();
         this.scene.Add(background);
-
-        var foreground = new Engine.Components.Graphics.Layer();
-        this.scene.Add(foreground);
 
         var backdrop = new Engine.Components.Graphics.SimpleVisual(
             new Engine.Rect(0, 0, this.scene.size.width, this.scene.size.height),
@@ -32,7 +44,15 @@ export class Game extends Engine.Game {
         );
         background.Add(backdrop);
 
-        var character = new Engine.Components.Graphics.SimpleVisual(
+        var foreground = new Engine.Components.Graphics.Layer();
+
+        this.scene.Add(foreground);
+
+        // Entities
+
+        this.entities = new Engine.Collection<Entity>();
+
+        var character = new Entity(
             new Engine.Rect(
                 this.scene.size.width / 2 - 25,
                 this.scene.size.height / 2 - 25,
@@ -40,7 +60,27 @@ export class Game extends Engine.Game {
                 50),
             "red"
         );
-        foreground.Add(character);
+        this.entities.Add(character);
+
+        var box = new Entity(
+            new Engine.Rect(
+                this.scene.size.width / 2 + 150,
+                this.scene.size.height / 2 - 25,
+                50,
+                50),
+            "green"
+        );
+        this.entities.Add(box);
+
+        this.entities.forEach(entity => {
+            this.world.Add(entity.body);
+        });
+
+        this.entities.forEach(entity => {
+            foreground.Add(entity.visual);
+        });
+
+        // Input
 
         this.inputHandlers = new Engine.Collection<Engine.System>();
 
@@ -65,25 +105,37 @@ export class Game extends Engine.Game {
         keyboardHandler.OnAnyKey([
             Engine.Components.Input.Keyboard.Key.W
         ],() => {
-            character.bounds.y -= 5;
+            character.body.ApplyInstantaneousVelocity(
+                new Engine.Point(0.0, -1.0),
+                200.0
+            );
         });
 
         keyboardHandler.OnAnyKey([
             Engine.Components.Input.Keyboard.Key.A
         ], () => {
-            character.bounds.x -= 5;
+            character.body.ApplyInstantaneousVelocity(
+                new Engine.Point(-1.0, 0.0),
+                200.0
+            );
         });
 
         keyboardHandler.OnAnyKey([
             Engine.Components.Input.Keyboard.Key.S
         ], () => {
-            character.bounds.y += 5;
+            character.body.ApplyInstantaneousVelocity(
+                new Engine.Point(0.0, 1.0),
+                200.0
+            );
         });
 
         keyboardHandler.OnAnyKey([
             Engine.Components.Input.Keyboard.Key.D
         ], () => {
-            character.bounds.x += 5;
+            character.body.ApplyInstantaneousVelocity(
+                new Engine.Point(1.0, 0.0),
+                200.0
+            );
         });
 
         this.inputHandlers.Add(keyboardHandler);
@@ -91,20 +143,25 @@ export class Game extends Engine.Game {
         var gamepadHandler = new Engine.Components.Input.Gamepad.Handler();
 
         gamepadHandler.OnReading((id: number, reading: Engine.Components.Input.Gamepad.Reading) => {
-            character.bounds.x += reading.leftThumbstick.x * 7.5;
-            character.bounds.y += reading.leftThumbstick.y * 7.5;
+            character.body.ApplyInstantaneousVelocity(
+                new Engine.Point(
+                    reading.leftThumbstick.x,
+                    reading.leftThumbstick.y
+                ),
+                200.0
+            );
 
             if (reading.buttons & Engine.Components.Input.Gamepad.Buttons.A) {
-                character.color = "green";
+                character.visual.color = "green";
             }
             else if (reading.buttons & Engine.Components.Input.Gamepad.Buttons.B) {
-                character.color = "red";
+                character.visual.color = "red";
             }
             else if (reading.buttons & Engine.Components.Input.Gamepad.Buttons.X) {
-                character.color = "blue";
+                character.visual.color = "blue";
             }
             else if (reading.buttons & Engine.Components.Input.Gamepad.Buttons.Y) {
-                character.color = "yellow";
+                character.visual.color = "yellow";
             }
         });
 
@@ -117,6 +174,7 @@ export class Game extends Engine.Game {
         this.inputHandlers.forEach((inputHandler : Engine.System) => {
             inputHandler.Update(dt);
         });
+        this.world.Step(dt);
         this.scene.Render();
     }
 };

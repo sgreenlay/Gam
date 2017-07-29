@@ -14,15 +14,12 @@ export class Layer extends Collection<Visual> implements Visual {
 
 export class Scene extends Collection<Layer> {
 
-    canvas : HTMLCanvasElement;
     context : CanvasRenderingContext2D;
-
     size : Size;
 
-    constructor(canvas : HTMLCanvasElement) {
+    constructor(public canvas : HTMLCanvasElement) {
         super();
 
-        this.canvas = canvas;
         this.context = canvas.getContext("2d");
 
         this.size = new Size(canvas.width, canvas.height);

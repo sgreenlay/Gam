@@ -10,6 +10,27 @@ export class Size {
 
 export class Rect {
     constructor(public x : number, public y : number, public width : number, public height : number) {}
+
+    Position() : Point {
+        return new Point(this.x, this.y);
+    }
+
+    Size() : Size {
+        return new Size(this.width, this.height);
+    }
+
+    Intersects(other : Rect) : Boolean {
+        // http://stackoverflow.com/a/13390495/169021
+        if ((this.x + this.width <=  other.x) ||
+            (other.x + other.width <=  this.x) ||
+            (this.y + this.height <=  other.y) ||
+            (other.y + other.height <=  this.y))
+        {
+            return false;
+        }
+
+        return true;
+    }
 }
 
 export class Vector {

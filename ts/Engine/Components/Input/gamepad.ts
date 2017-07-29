@@ -26,7 +26,7 @@ export class Thumbstick {
     public x : number;
     public y : number;
 
-    static Deadzone : number = 0.025;
+    static Deadzone : number = 0.1;
 
     constructor(public rawX : number, public rawY : number) {
         var applyDeadzone = (axis : number) : number => {
