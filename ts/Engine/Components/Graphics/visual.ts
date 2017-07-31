@@ -5,6 +5,8 @@
 module Engine.Components.Graphics {
 
 export interface Visual {
+    bounds : Rect;
+
     Render(context : CanvasRenderingContext2D);
 }
 

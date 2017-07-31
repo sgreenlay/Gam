@@ -13,6 +13,18 @@ export class Collection<T> {
         });
     }
 
+    Length() : number {
+        return this.elements.length;
+    }
+
+    Get(index : number) : T | null {
+        if (index >= 0 && index < this.elements.length)
+        {
+            return this.elements[index];
+        }
+        return null;
+    }
+
     Add(element : T) {
         this.elements.push(element);
     }
@@ -22,6 +34,18 @@ export class Collection<T> {
         if (idx > 0) {
             this.elements.splice(idx);
         }
+    }
+
+    Sort(compare) {
+        this.elements.sort(compare);
+    }
+
+    Filter(filter) {
+        this.elements = this.elements.filter(filter);
+    }
+
+    Transform(transform) {
+        this.elements = this.elements.map(transform);
     }
 }
 

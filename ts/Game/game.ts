@@ -7,6 +7,7 @@
 
 ///<reference path='../Engine/Components/Graphics/scene.ts'/>
 ///<reference path='../Engine/Components/Graphics/visual.ts'/>
+///<reference path='../Engine/Components/Graphics/lightmap.ts'/>
 
 ///<reference path='../Engine/Components/Physics/world.ts'/>
 ///<reference path='../Engine/Components/Physics/body.ts'/>
@@ -46,6 +47,9 @@ export class Game extends Engine.Game {
 
         var foreground = new Engine.Components.Graphics.Layer();
 
+        var lightmap = new Engine.Components.Graphics.Lightmap(backdrop.bounds);
+        foreground.Add(lightmap);
+
         this.scene.Add(foreground);
 
         // Entities
@@ -58,25 +62,41 @@ export class Game extends Engine.Game {
                 this.scene.size.height / 2 - 25,
                 50,
                 50),
-            "red"
+            "white"
         );
         this.entities.Add(character);
+        lightmap.AddSource(character.visual);
 
-        var box = new Entity(
-            new Engine.Rect(
-                this.scene.size.width / 2 + 150,
-                this.scene.size.height / 2 - 25,
-                50,
-                50),
-            "green"
-        );
-        this.entities.Add(box);
+        var blockPositions = [
+            new Engine.Point(
+                this.scene.size.width / 2 - 175,
+                this.scene.size.height / 2),
+            new Engine.Point(
+                this.scene.size.width / 2 + 175,
+                this.scene.size.height / 2),
+            new Engine.Point(
+                this.scene.size.width / 2,
+                this.scene.size.height / 2 - 175),
+            new Engine.Point(
+                this.scene.size.width / 2,
+                this.scene.size.height / 2 + 175)
+        ];
 
-        this.entities.forEach(entity => {
-            this.world.Add(entity.body);
+        blockPositions.forEach((point : Engine.Point) => {
+            var block = new Entity(
+                new Engine.Rect(
+                    point.x - 25,
+                    point.y - 25,
+                    50,
+                    50),
+                "gray"
+            );
+            this.entities.Add(block);
+            lightmap.AddSolid(block.visual);
         });
 
         this.entities.forEach(entity => {
+            this.world.Add(entity.body);
             foreground.Add(entity.visual);
         });
 
@@ -86,16 +106,11 @@ export class Game extends Engine.Game {
 
         var mouseHandler = new Engine.Components.Input.Mouse.Handler(canvas);
 
-        mouseHandler.OnButton(Engine.Components.Input.Mouse.Button.Left, (position : Engine.Point) => {
-            //
-        });
-
-        mouseHandler.OnButton(Engine.Components.Input.Mouse.Button.Right, (position : Engine.Point) => {
-            //
-        });
-
-        mouseHandler.OnMove((position : Engine.Point) => {
-            //
+        mouseHandler.OnButton(
+            Engine.Components.Input.Mouse.Button.Left, 
+        (start : Engine.Point, current : Engine.Point) => {
+            character.body.bounds.x = current.x - character.body.bounds.width / 2;
+            character.body.bounds.y = current.y - character.body.bounds.height / 2;
         });
 
         this.inputHandlers.Add(mouseHandler);
@@ -138,6 +153,14 @@ export class Game extends Engine.Game {
             );
         });
 
+        keyboardHandler.OnAnyKey([
+            Engine.Components.Input.Keyboard.Key.Tilde
+        ], (repeat : boolean) => {
+            if (!repeat) {
+                lightmap.Debug = !lightmap.Debug;
+            }
+        });
+
         this.inputHandlers.Add(keyboardHandler);
 
         var gamepadHandler = new Engine.Components.Input.Gamepad.Handler();
@@ -150,19 +173,6 @@ export class Game extends Engine.Game {
                 ),
                 200.0
             );
-
-            if (reading.buttons & Engine.Components.Input.Gamepad.Buttons.A) {
-                character.visual.color = "green";
-            }
-            else if (reading.buttons & Engine.Components.Input.Gamepad.Buttons.B) {
-                character.visual.color = "red";
-            }
-            else if (reading.buttons & Engine.Components.Input.Gamepad.Buttons.X) {
-                character.visual.color = "blue";
-            }
-            else if (reading.buttons & Engine.Components.Input.Gamepad.Buttons.Y) {
-                character.visual.color = "yellow";
-            }
         });
 
         this.inputHandlers.Add(gamepadHandler);

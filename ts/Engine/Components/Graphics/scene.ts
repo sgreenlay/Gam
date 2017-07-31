@@ -5,6 +5,8 @@
 module Engine.Components.Graphics {
 
 export class Layer extends Collection<Visual> implements Visual {
+    bounds : Rect;
+
     Render(context : CanvasRenderingContext2D) {
         this.elements.forEach(visual => {
             visual.Render(context);

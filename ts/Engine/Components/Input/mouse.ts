@@ -12,7 +12,7 @@ export enum Button {
 
 export class Handler implements System {
     button : Map<Point>;
-    buttonHandler : Map<(position : Point) => void>;
+    buttonHandler : Map<(start : Point, current : Point) => void>;
 
     move : Point;
     moveHandler : (position : Point) => void;
@@ -70,21 +70,23 @@ export class Handler implements System {
         this.moveHandler = handler;
     }
 
-    OnButton(button : Button, handler : (position : Point) => void) {
+    OnButton(button : Button, handler : (start : Point, current : Point) => void) {
         this.buttonHandler.Add(button.toString(), handler);
     }
 
     Update(dt : number) {
-        if (this.move && this.moveHandler) {
-            this.moveHandler(this.move);
-        }
-
-        this.button.forEach((button : string, position : Point) => {
-            if (this.buttonHandler.Exists(button)) {
-                var handler = this.buttonHandler.Get(button);
-                handler(position);
+        if (this.move) {
+            if (this.moveHandler) {
+                this.moveHandler(this.move);
             }
-        });
+
+            this.button.forEach((button : string, down : Point) => {
+                if (this.buttonHandler.Exists(button)) {
+                    var handler = this.buttonHandler.Get(button);
+                    handler(down, this.move);
+                }
+            });
+        }
     }
 }
 

@@ -45,24 +45,27 @@ export enum Key {
     Up = 38,
     Right = 39,
     Down = 40,
-    Space = 32
+    Space = 32,
+    Tilde = 192
 };
 
 export class Handler implements System {
-    keys : Map<Boolean>;
-    keyHandler : Map<() => void>;
+    keys : Map<[boolean, boolean]>;
+    keyHandler : Map<(repeat : boolean) => void>;
 
     constructor()
     {
-        this.keys = new Map<Boolean>();
+        this.keys = new Map<[boolean, boolean]>();
         this.keyHandler = new Map<() => void>();
 
         document.addEventListener('keydown', (event) => {
-            this.keys.Add(event.keyCode.toString(), true);
+            if (!this.keys.Exists(event.keyCode.toString())) {
+                this.keys.Add(event.keyCode.toString(), [true, false]);
 
-            if (this.keyHandler.Exists(event.keyCode.toString()))
-            {
-                event.preventDefault();
+                if (this.keyHandler.Exists(event.keyCode.toString()))
+                {
+                    event.preventDefault();
+                }
             }
         });
         document.addEventListener('keyup', (event) => {
@@ -75,21 +78,22 @@ export class Handler implements System {
         });
     }
 
-    OnAnyKey(keys : Array<Key>, handler : () => void) {
+    OnAnyKey(keys : Array<Key>, handler : (repeat : boolean) => void) {
         keys.forEach((key : Key) => {
             this.keyHandler.Add(key.toString(), handler);
         });
     }
 
-    OnKey(key : Key, handler : () => void) {
+    OnKey(key : Key, handler : (repeat : boolean) => void) {
         this.keyHandler.Add(key.toString(), handler);
     }
 
     Update(dt : number) {
-        this.keys.forEach((keyCode : string, value : Boolean) => {
+        this.keys.forEach((keyCode : string, value : [boolean, boolean]) => {
             if (this.keyHandler.Exists(keyCode)) {
                 var handler = this.keyHandler.Get(keyCode);
-                handler();
+                handler(value[1]);
+                value[1] = true;
             }
         });
     }
