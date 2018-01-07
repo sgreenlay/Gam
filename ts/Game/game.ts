@@ -7,7 +7,7 @@
 
 ///<reference path='../Engine/Components/Graphics/scene.ts'/>
 ///<reference path='../Engine/Components/Graphics/visual.ts'/>
-///<reference path='../Engine/Components/Graphics/lightmap.ts'/>
+///<reference path='../Engine/Experimental/Graphics/lightmap.ts'/>
 
 ///<reference path='../Engine/Components/Physics/world.ts'/>
 ///<reference path='../Engine/Components/Physics/body.ts'/>
@@ -47,7 +47,7 @@ export class Game extends Engine.Game {
 
         var foreground = new Engine.Components.Graphics.Layer();
 
-        var lightmap = new Engine.Components.Graphics.Lightmap(backdrop.bounds);
+        var lightmap = new Engine.Experimental.Graphics.Lightmap(backdrop.bounds);
         foreground.Add(lightmap);
 
         this.scene.Add(foreground);

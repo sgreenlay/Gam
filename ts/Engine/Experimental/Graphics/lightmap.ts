@@ -1,33 +1,33 @@
 
-///<reference path='../Physics/body.ts'/>
+///<reference path='../../Components/Physics/body.ts'/>
 ///<reference path='../../helpers.ts'/>
 
-module Engine.Components.Graphics {
+module Engine.Experimental.Graphics {
 
-export class Lightmap implements Visual {
+export class Lightmap implements Engine.Components.Graphics.Visual {
 
-    sources : Engine.Collection<Visual>;
-    solids : Engine.Collection<Visual>;
+    sources : Engine.Collection<Engine.Components.Graphics.Visual>;
+    solids : Engine.Collection<Engine.Components.Graphics.Visual>;
 
     public Debug = true;
 
     constructor(public bounds : Engine.Rect) {
-        this.sources = new Engine.Collection<Visual>();
-        this.solids = new Engine.Collection<Visual>();
+        this.sources = new Engine.Collection<Engine.Components.Graphics.Visual>();
+        this.solids = new Engine.Collection<Engine.Components.Graphics.Visual>();
     }
 
-    AddSource(source : Visual)
+    AddSource(source : Engine.Components.Graphics.Visual)
     {
         this.sources.Add(source);
     }
 
-    AddSolid(solid : Visual)
+    AddSolid(solid : Engine.Components.Graphics.Visual)
     {
         this.solids.Add(solid);
     }
 
     Render(context : CanvasRenderingContext2D) {
-        this.sources.forEach((source : Visual) => {
+        this.sources.forEach((source : Engine.Components.Graphics.Visual) => {
             var sourceCenter = source.bounds.Center();
 
             var points = new Engine.Collection<Engine.Point | Engine.LineSegment>();
@@ -37,7 +37,7 @@ export class Lightmap implements Visual {
             points.Add(this.bounds.BottomLeft());
             points.Add(this.bounds.BottomRight());
 
-            this.solids.forEach((solid : Visual) => {
+            this.solids.forEach((solid : Engine.Components.Graphics.Visual) => {
                 var approxLocation = solid.bounds.ApproximateLocation(sourceCenter);
 
                 if ((approxLocation == 1) || (approxLocation == 5))
