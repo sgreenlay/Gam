@@ -46,10 +46,6 @@ export class Game extends Engine.Game {
         background.Add(backdrop);
 
         var foreground = new Engine.Components.Graphics.Layer();
-
-        var lightmap = new Engine.Experimental.Graphics.Lightmap(backdrop.bounds);
-        foreground.Add(lightmap);
-
         this.scene.Add(foreground);
 
         // Entities
@@ -65,35 +61,6 @@ export class Game extends Engine.Game {
             "white"
         );
         this.entities.Add(character);
-        lightmap.AddSource(character.visual);
-
-        var blockPositions = [
-            new Engine.Point(
-                this.scene.size.width / 2 - 175,
-                this.scene.size.height / 2),
-            new Engine.Point(
-                this.scene.size.width / 2 + 175,
-                this.scene.size.height / 2),
-            new Engine.Point(
-                this.scene.size.width / 2,
-                this.scene.size.height / 2 - 175),
-            new Engine.Point(
-                this.scene.size.width / 2,
-                this.scene.size.height / 2 + 175)
-        ];
-
-        blockPositions.forEach((point : Engine.Point) => {
-            var block = new Entity(
-                new Engine.Rect(
-                    point.x - 25,
-                    point.y - 25,
-                    50,
-                    50),
-                "gray"
-            );
-            this.entities.Add(block);
-            lightmap.AddSolid(block.visual);
-        });
 
         this.entities.forEach(entity => {
             this.world.Add(entity.body);
@@ -153,14 +120,6 @@ export class Game extends Engine.Game {
             );
         });
 
-        keyboardHandler.OnAnyKey([
-            Engine.Components.Input.Keyboard.Key.Tilde
-        ], (repeat : boolean) => {
-            if (!repeat) {
-                lightmap.Debug = !lightmap.Debug;
-            }
-        });
-
         this.inputHandlers.Add(keyboardHandler);
 
         var gamepadHandler = new Engine.Components.Input.Gamepad.Handler();
@@ -171,7 +130,7 @@ export class Game extends Engine.Game {
                     reading.leftThumbstick.x,
                     reading.leftThumbstick.y
                 ),
-                200.0
+                250.0
             );
         });
 
