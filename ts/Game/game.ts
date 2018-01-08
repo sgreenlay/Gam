@@ -7,6 +7,10 @@
 
 ///<reference path='../Engine/Components/Graphics/scene.ts'/>
 ///<reference path='../Engine/Components/Graphics/visual.ts'/>
+///<reference path='../Engine/Experimental/Graphics/lightmap.ts'/>
+
+///<reference path='../Engine/Components/Physics/world.ts'/>
+///<reference path='../Engine/Components/Physics/body.ts'/>
 
 ///<reference path='entity.ts'/>
 
@@ -15,11 +19,18 @@ module Game {
 export class Game extends Engine.Game {
 
     scene : Engine.Components.Graphics.Scene;
+    world : Engine.Components.Physics.World;
     inputHandlers : Engine.Collection<Engine.System>;
     entities : Engine.Collection<Entity>;
 
     constructor(canvas : HTMLCanvasElement) {
         super();
+
+        // Physics
+
+        this.world = new Engine.Components.Physics.World();
+
+        //this.world.ApplyGravity(new Engine.Point(0, 1), 9.81);
 
         // Graphics
 
@@ -34,16 +45,27 @@ export class Game extends Engine.Game {
         );
         background.Add(backdrop);
 
-        this.scene.OnResize((size : Engine.Size) => {
-            backdrop.bounds = new Engine.Rect(0, 0, size.width, size.height);
-        });
-
         var foreground = new Engine.Components.Graphics.Layer();
+
+        var lightmap = new Engine.Experimental.Graphics.Lightmap(backdrop.bounds);
+        foreground.Add(lightmap);
+
         this.scene.Add(foreground);
 
         // Entities
 
         this.entities = new Engine.Collection<Entity>();
+
+        var character = new Entity(
+            new Engine.Rect(
+                this.scene.size.width / 2 - 25,
+                this.scene.size.height / 2 - 25,
+                50,
+                50),
+            "white"
+        );
+        this.entities.Add(character);
+        lightmap.AddSource(character.visual);
 
         var blockPositions = [
             new Engine.Point(
@@ -67,12 +89,14 @@ export class Game extends Engine.Game {
                     point.y - 25,
                     50,
                     50),
-                "white"
+                "gray"
             );
             this.entities.Add(block);
+            lightmap.AddSolid(block.visual);
         });
 
         this.entities.forEach(entity => {
+            this.world.Add(entity.body);
             foreground.Add(entity.visual);
         });
 
@@ -85,19 +109,82 @@ export class Game extends Engine.Game {
         mouseHandler.OnButton(
             Engine.Components.Input.Mouse.Button.Left, 
         (start : Engine.Point, current : Engine.Point) => {
-            // TODO
+            character.body.bounds.x = current.x - character.body.bounds.width / 2;
+            character.body.bounds.y = current.y - character.body.bounds.height / 2;
         });
 
         this.inputHandlers.Add(mouseHandler);
+
+        var keyboardHandler = new Engine.Components.Input.Keyboard.Handler();
+
+        keyboardHandler.OnAnyKey([
+            Engine.Components.Input.Keyboard.Key.W
+        ],() => {
+            character.body.ApplyInstantaneousVelocity(
+                new Engine.Point(0.0, -1.0),
+                200.0
+            );
+        });
+
+        keyboardHandler.OnAnyKey([
+            Engine.Components.Input.Keyboard.Key.A
+        ], () => {
+            character.body.ApplyInstantaneousVelocity(
+                new Engine.Point(-1.0, 0.0),
+                200.0
+            );
+        });
+
+        keyboardHandler.OnAnyKey([
+            Engine.Components.Input.Keyboard.Key.S
+        ], () => {
+            character.body.ApplyInstantaneousVelocity(
+                new Engine.Point(0.0, 1.0),
+                200.0
+            );
+        });
+
+        keyboardHandler.OnAnyKey([
+            Engine.Components.Input.Keyboard.Key.D
+        ], () => {
+            character.body.ApplyInstantaneousVelocity(
+                new Engine.Point(1.0, 0.0),
+                200.0
+            );
+        });
+
+        keyboardHandler.OnAnyKey([
+            Engine.Components.Input.Keyboard.Key.Tilde
+        ], (repeat : boolean) => {
+            if (!repeat) {
+                lightmap.Debug = !lightmap.Debug;
+            }
+        });
+
+        this.inputHandlers.Add(keyboardHandler);
+
+        var gamepadHandler = new Engine.Components.Input.Gamepad.Handler();
+
+        gamepadHandler.OnReading((id: number, reading: Engine.Components.Input.Gamepad.Reading) => {
+            character.body.ApplyInstantaneousVelocity(
+                new Engine.Point(
+                    reading.leftThumbstick.x,
+                    reading.leftThumbstick.y
+                ),
+                200.0
+            );
+        });
+
+        this.inputHandlers.Add(gamepadHandler);
 
         this.Start();
     }
 
     Update(dt : number) {
-        this.scene.Resize();
         this.inputHandlers.forEach((inputHandler : Engine.System) => {
             inputHandler.Update(dt);
         });
+        this.world.Step(dt);
         this.scene.Render();
     }
 };

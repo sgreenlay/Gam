@@ -39,7 +39,6 @@ export class Handler implements System {
                 event.preventDefault();
             }
         });
-
         canvas.addEventListener('mouseout', (event) => {
             this.move = null;
 
@@ -57,7 +56,6 @@ export class Handler implements System {
                 event.preventDefault();
             }
         });
-
         canvas.addEventListener('mouseup', (event) => {
             this.button.Remove(event.button.toString());
 
