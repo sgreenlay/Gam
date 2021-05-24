@@ -1,11 +1,61 @@
-import {Bounds} from './utils.mjs';
+import { Component, System } from './engine.mjs';
+import { Bounds } from './utils.mjs';
 
-export class Renderable {
-    constructor() {}
+export class Renderable extends Component {
+    render(ctx, entity) {
+        console.log("Renderable component must implement render");
+    }
 }
 
-export class RenderSystem {
+export class RenderRect extends Renderable {
+    constructor(color) {
+        super();
+
+        this.color = color;
+    }
+
+    render(ctx, entity) {
+        const bounds = entity.getComponent(Bounds);
+        if (bounds != null) {
+            ctx.fillStyle = this.color;
+            ctx.fillRect(
+                bounds.x,
+                bounds.y,
+                bounds.w,
+                bounds.h);
+        } else {
+            console.log("RenderRect requires a Bounds component");
+        }
+    }
+}
+
+export class RenderImage extends Renderable {
+    constructor(src) {
+        super();
+
+        this.img = new Image();
+        this.img.src = src;
+    }
+
+    render(ctx, entity) {
+        const bounds = entity.getComponent(Bounds);
+        if (bounds != null) {
+            ctx.drawImage(
+                this.img,
+                bounds.x,
+                bounds.y,
+                bounds.w,
+                bounds.h);
+        } else {
+            console.log("RenderImage requires a Bounds component");
+        }
+    }
+}
+
+export class RenderSystem extends System {
     constructor(canvas) {
+        super();
+
         this.ctx = canvas.getContext("2d");
         this.size = { width: canvas.width, height: canvas.height };
 
@@ -23,19 +73,11 @@ export class RenderSystem {
 
         // Iterate through all the renderable entities and render them
         for (var i = 0; i < entities.length; ++i) {
-            let entity = entities[i];
-
-            let renderable = entity.getComponent(Renderable);
-            let bounds = entity.getComponent(Bounds);
-
-            if (renderable && bounds) {
-                // Draw a rectangle
-                this.ctx.fillStyle = 'rgba(255, 0, 0, 1.0)';
-                this.ctx.fillRect(
-                    bounds.x,
-                    bounds.y,
-                    bounds.w,
-                    bounds.h);
+            const entity = entities[i];
+            const renderables = entity.getComponents(Renderable);
+            for (var j = 0; j < renderables.length; ++j) {
+                const renderable = renderables[j];
+                renderable.render(this.ctx, entity);
             }
         }
     }
